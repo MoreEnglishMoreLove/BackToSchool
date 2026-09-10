@@ -2,9 +2,8 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import fs from 'fs';
 import path from 'path';
-import {defineConfig, Plugin} from 'vite';
+import { defineConfig, Plugin } from 'vite';
 
-// LINT.IfChange(aistudio_media_plugin)
 function aistudioMediaPlugin(): Plugin {
   return {
     name: 'vite-plugin-aistudio-media',
@@ -15,12 +14,7 @@ function aistudioMediaPlugin(): Plugin {
           try {
             const decodedPath = decodeURIComponent(rawPath);
             const relativePath = decodedPath.replace(/^\//, '');
-            const aistudioDir = path.resolve(
-              __dirname,
-              'public',
-              'assets',
-              'aistudio',
-            );
+            const aistudioDir = path.resolve(__dirname, 'public', 'assets', 'aistudio');
             const filePath = path.resolve(__dirname, 'public', relativePath);
             if (
               filePath.startsWith(aistudioDir + path.sep) &&
@@ -45,10 +39,7 @@ function aistudioMediaPlugin(): Plugin {
                 '.ogg': 'audio/ogg',
                 '.pdf': 'application/pdf',
               };
-              res.setHeader(
-                'Content-Type',
-                mimeMap[ext] || 'application/octet-stream',
-              );
+              res.setHeader('Content-Type', mimeMap[ext] || 'application/octet-stream');
               res.setHeader('Cache-Control', 'no-cache');
               fs.createReadStream(filePath).pipe(res);
               return;
@@ -62,10 +53,10 @@ function aistudioMediaPlugin(): Plugin {
     },
   };
 }
-// LINT.ThenChange(//depot/google3/java/com/google/alkali/boq/makersuite/applet_dev_service/templates/initializers/react_theme/vite.config.ts:aistudio_media_plugin)
 
 export default defineConfig(() => {
   return {
+    base: '/BackToSchool/', 
     plugins: [react(), tailwindcss(), aistudioMediaPlugin()],
     resolve: {
       alias: {
@@ -73,10 +64,7 @@ export default defineConfig(() => {
       },
     },
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
   };
